@@ -1,0 +1,4 @@
+allow comments in value files
+warn if a variable is never used
+warn if an expected variable is not defined in value file
+allow line breaks in variable values (for stylesheets, etc.)
