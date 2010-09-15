@@ -1,1 +1,2 @@
+show help if arguments are incorrect
 allow line breaks in variable values (for stylesheets, etc.)

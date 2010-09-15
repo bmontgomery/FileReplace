@@ -2,6 +2,9 @@ import sys
 import os.path
 import re
 
+if len(sys.argv) != 4:
+	sys.exit("Error: incorrect number of arguments.")
+
 if len(sys.argv) >= 2:
 	templateFilePath = sys.argv[1]
 
