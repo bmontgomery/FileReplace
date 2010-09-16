@@ -2,7 +2,63 @@ import sys
 import os.path
 import re
 
+def printHelp(extended):
+	print "Usage: filereplace.py [TEMPLATE_FILE] [VALUE_FILE] [OUTPUT_FILE]"
+	print ""
+	print "  TEMPLATE_FILE    Required. This file contains the text in which this script"
+	print "                   will replace variable references with their values from"
+	print "                   the VALUE_FILE. This file is not edited."
+	print ""
+	print "  VALUE_FILE       Required. This file contains the variable definitions."
+	print "                   Each variable reference in TEMPLATE_FILE will be replaced"
+	print "                   with the variable definition in this file. This file is"
+	print "                   not edited."
+	print ""
+	print "  OUTPUT_FILE      Required. This is the file to which the resulting text is"
+	print "                   written after all variable replacements have been"
+	print "                   performed."
+	print ""
+	
+	if extended:
+		print "Notes:"
+		print ""
+		print "  ---------------------------------------------------------------------------"
+		print "  The Template File"
+		print ""
+		print "  This script will examine the template file for variable references."
+		print "  Variable references are formatted like this: \"@VARIABLE_NAME@\" (without"
+		print "  the quotes). Variable names can contain letters and underscores (_) and"
+		print "  should only be defined once in a value file."
+		print ""
+		print "  Example:"
+		print ""
+		print "    <add key=\"DbConnStr\" value=\"server=@DB_SERVER@;database=@DB_NAME@\" />"
+		print ""
+		print "  If you wish to use an @ symbol in the template file without referencing a"
+		print "  a variable, escape it like this: \\@."
+		print ""
+		print "  ---------------------------------------------------------------------------"
+		print "  The Value File"
+		print ""
+		print "  The value file contains the variable definitions. One variable definition"
+		print "  is permitted per line. The variable name must not include the @ symbols."
+		print "  The variable name is followed by a single equals (=) sign, then the value"
+		print "  with which the script will replace all variable references in"
+		print "  TEMPLATE_FILE."
+		print ""
+		print "  Example:"
+		print ""
+		print "    DB_SERVER=.\SQLEXPRESS"
+		print "    DB_Name=TeamDynamix"
+
+# see if the user is asking for help
+if len(sys.argv) == 2 and sys.argv[1].lower() == "help":
+	printHelp(True)
+	sys.exit()
+	
+# validate arguments	
 if len(sys.argv) != 4:
+	printHelp(False)
 	sys.exit("Error: incorrect number of arguments.")
 
 if len(sys.argv) >= 2:
@@ -36,7 +92,11 @@ if os.path.isfile(valueFilePath):
 		if line[0] != "#" and line[0] != '\n':
 			if '=' in line:
 				splitLine = line.partition('=')
-				variables[splitLine[0]] = splitLine[2].rstrip("\n")
+				varName = splitLine[0]
+				if varName not in variables:
+					variables[varName] = splitLine[2].rstrip("\n")
+				else:
+					print "Warning: Variable \"" + varName + "\" defined twice. Original value will be used."
 			else:
 				print "Warning: Invalid syntax in value file at line " + str(lineNum) + ": missing \"=\""
 		
@@ -49,10 +109,6 @@ if os.path.isfile(templateFilePath):
 	templateFile = open(templateFilePath, 'r')
 else:
 	sys.exit("Error: Template file does not exist.")
-
-# delete the result file if necessary
-if os.path.isfile(resultFilePath):
-	os.remove(resultFilePath)
 
 # load up the result file
 resultFile = open(resultFilePath, 'w')
@@ -110,4 +166,4 @@ if templateFile != None:
 if resultFile != None:
 	resultFile.close()
 
-print "\nFile Replace Successful."
+print "\nFile generated successfully."
