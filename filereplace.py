@@ -1,6 +1,6 @@
 import sys
-import os.path
 import re
+from System.IO import File
 
 def printHelp(extended):
 	print "Usage: filereplace.py [TEMPLATE_FILE] [VALUE_FILE] [OUTPUT_FILE]"
@@ -81,7 +81,7 @@ templateFile = None
 
 # load up the variable values into a dictionary
 variables = {}
-if os.path.isfile(valueFilePath):
+if File.Exists(valueFilePath):
 	valueFile = open(valueFilePath, 'r')
 	
 	lineNum = 0
@@ -105,7 +105,7 @@ else:
 	sys.exit("Error: Value file does not exist.")
 
 # load up the template file
-if os.path.isfile(templateFilePath):
+if File.Exists(templateFilePath):
 	templateFile = open(templateFilePath, 'r')
 else:
 	sys.exit("Error: Template file does not exist.")
